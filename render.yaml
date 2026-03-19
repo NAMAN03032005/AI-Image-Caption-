@@ -5,9 +5,11 @@ services:
     region: oregon
     plan: free
     buildCommand: "pip install -r requirements.txt && python build_model_cache.py"
-    startCommand: "gunicorn app:app --timeout 120"
+    startCommand: "gunicorn app:app -b 0.0.0.0:10000 --timeout 120"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
       - key: RENDER
         value: "true"
+      - key: HF_HOME
+        value: ".hf_cache"
