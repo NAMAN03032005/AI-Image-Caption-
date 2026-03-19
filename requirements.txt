@@ -1,9 +1,10 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
+numpy<2.0.0
 torch==2.1.0+cpu
 torchvision==0.16.0+cpu
-Flask
-flask-cors
-transformers
-Pillow
-Werkzeug
+Flask==3.0.0
+flask-cors==4.0.0
+transformers==4.35.0
+Pillow==10.1.0
+Werkzeug==3.0.1
 gunicorn
