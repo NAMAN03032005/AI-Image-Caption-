@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaptionAI - Premium AI Caption Generator</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="light-mode">
+    
+    <!-- Background Elements -->
+    <div class="bg-noise"></div>
+    <div class="blob shape-1"></div>
+    <div class="blob shape-2"></div>
+    <div class="blob shape-3"></div>
+    
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <nav class="navbar fade-in">
+        <div class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <span>Caption<span class="highlight">AI</span></span>
+        </div>
+        <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero slide-up" style="animation-delay: 0.1s;">
+            <div class="badge">✨ New: Deep Learning Model</div>
+            <h1>The Ultimate AI <span>Image Captioning</span> Tool</h1>
+            <p>Upload any picture and let our cutting-edge AI generate short, punchy, and highly accurate captions in seconds. Perfect for social media, blogs, and more.</p>
+            <a href="#upload-section" class="cta-link">Try it now <i class="fa-solid fa-arrow-right"></i></a>
+        </section>
+
+        <!-- Upload Section (Main Card) -->
+        <section id="upload-section" class="upload-section slide-up" style="animation-delay: 0.2s;">
+            <div class="glass-card main-card gradient-border">
+                <div class="upload-box" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                    
+                    <div class="upload-placeholder" id="upload-placeholder">
+                        <div class="upload-icon-wrapper pulse-anim">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h3>Drag & drop your image here</h3>
+                        <p>or <span class="browse-link">browse files</span></p>
+                        <small>Supports JPG, PNG, GIF (Max 5MB)</small>
+                    </div>
+
+                    <div class="preview-wrapper" id="preview-wrapper" style="display:none;">
+                        <img id="preview-img" src="" alt="Image Preview">
+                        <button class="remove-btn" id="remove-btn" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="scan-line" id="scan-line" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button id="generate-btn" class="primary-btn glow-effect" disabled>
+                        <span class="btn-text">Generate Captions</span>
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Area -->
+            <div class="results-area" id="results-area" style="display:none;">
+                <h3 class="results-title"><i class="fa-solid fa-check-circle"></i> Generated Captions</h3>
+                <div class="caption-cards" id="caption-cards"></div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features slide-up" style="animation-delay: 0.3s;">
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Lightning Fast</h3>
+                <p>Get multiple caption variations in milliseconds thanks to our optimized backend infrastructure.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+                <h3>AI Powered</h3>
+                <p>Driven by state-of-the-art BLIP vision-language models for unparalleled accuracy and context.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                <h3>Fully Responsive</h3>
+                <p>Designed to work flawlessly across all your devices, from massive desktop monitors to smartphones.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="fade-in" style="animation-delay: 0.5s;">
+        <p>&copy; 2026 CaptionAI Project. Built with Flask & HuggingFace.</p>
+    </footer>
+
+    <!-- Toasts -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
