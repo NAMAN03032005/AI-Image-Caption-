@@ -1,9 +1,9 @@
-Flask==3.0.0
-flask-cors==4.0.0
-transformers==4.35.0
-torch==2.1.0
-torchvision==0.16.0
-Pillow==10.1.0
-Werkzeug==3.0.1
-tensorflow==2.15.0
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.1.0+cpu
+torchvision==0.16.0+cpu
+Flask
+flask-cors
+transformers
+Pillow
+Werkzeug
 gunicorn
