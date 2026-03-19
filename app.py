@@ -7,6 +7,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
 
 app = Flask(__name__)
 CORS(app)
@@ -20,18 +21,32 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # MODEL LOADING (loaded once at startup)
 # -------------------------------------------------------
 device = "cuda" if torch.cuda.is_available() else "cpu"
-dtype = torch.float16 if device == "cuda" else torch.float32
-print(f"Using device: {device} with dtype: {dtype}")
-print("Loading BLIP model (Salesforce/blip-image-captioning-base)...")
+dtype = torch.float32  # explicit float32 to avoid quantization support errors
+is_render = os.getenv("RENDER") == "true"
+
+print(f"Using device: {device} with dtype: {dtype} (On Render: {is_render})")
+
+processor = None
+model = None
+feature_extractor = None
+tokenizer = None
 
 try:
-    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base", torch_dtype=dtype).to(device)
-    model.eval()
-    print("BLIP model loaded successfully!")
+    if is_render:
+        print("Loading lightweight model for Render Free Tier (ViT-GPT2)...")
+        model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning").to(device)
+        feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+        tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+    else:
+        print("Loading BLIP model (Salesforce/blip-image-captioning-base)...")
+        processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base", torch_dtype=dtype).to(device)
+        
+    if model:
+        model.eval()
+        print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading model: {e}")
-    processor = None
     model = None
 
 # -------------------------------------------------------
