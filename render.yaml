@@ -4,8 +4,8 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    buildCommand: "pip install -r requirements.txt && python build_model_cache.py"
+    startCommand: "gunicorn app:app --timeout 120"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
