@@ -128,38 +128,52 @@ def generate_social_caption(base_caption, style_idx):
 # -------------------------------------------------------
 def generate_captions(image):
     """Generate multiple engaging social media captions via rapid batch inference."""
-    # Speed Optimization: Aggressive resize to 224x224
     image = image.resize((224, 224))
     
-    # Conditional prompt to guide the model purely to descriptive core actions
-    prompt = "a photography of"
-    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, dtype)
-    
     with torch.no_grad():
-        # num_beams=1 disables heavy beam-search for major speed improvements.
-        # temperature=1.1 & top_p=0.95 increases human-like descriptive creativity.
-        out = model.generate(
-            **inputs,
-            max_length=45,
-            num_beams=1,
-            temperature=1.1,
-            repetition_penalty=1.3,
-            num_return_sequences=3,
-            do_sample=True,
-            top_p=0.95
-        )
-        
+        if is_render and feature_extractor and tokenizer:
+            # Stage 1: Fast inference using ViT-GPT2 for Render Free tier
+            pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values.to(device)
+            out = model.generate(
+                pixel_values,
+                max_length=45,
+                num_beams=1,
+                temperature=1.2,
+                repetition_penalty=1.3,
+                num_return_sequences=3,
+                do_sample=True,
+                top_p=0.95
+            )
+            raw_captions = tokenizer.batch_decode(out, skip_special_tokens=True)
+            
+        elif processor:
+            # Stage 2: Prompted BLIP for non-render configurations
+            prompt = "a photography of"
+            inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, dtype)
+            
+            out = model.generate(
+                **inputs,
+                max_length=45,
+                num_beams=1,
+                temperature=1.1,
+                repetition_penalty=1.3,
+                num_return_sequences=3,
+                do_sample=True,
+                top_p=0.95
+            )
+            raw_captions = []
+            for item in out:
+                raw = processor.decode(item, skip_special_tokens=True)
+                if raw.lower().startswith(prompt.lower()):
+                    raw = raw[len(prompt):].strip()
+                raw_captions.append(raw)
+        else:
+            return ["Model configuration failed to load."]
+            
     captions = []
     seen = set()
-    for i in range(len(out)):
-        raw = processor.decode(out[i], skip_special_tokens=True)
-        # Strip injected prompt
-        if raw.lower().startswith(prompt.lower()):
-            raw = raw[len(prompt):].strip()
-            
+    for i, raw in enumerate(raw_captions):
         social_caption = generate_social_caption(raw, i)
-        
-        # Deduplicate variations
         if social_caption not in seen:
             seen.add(social_caption)
             captions.append(social_caption)
