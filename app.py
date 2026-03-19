@@ -21,8 +21,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # MODEL LOADING (loaded once at startup)
 # -------------------------------------------------------
 device = "cuda" if torch.cuda.is_available() else "cpu"
-dtype = torch.float32  # explicit float32 to avoid quantization support errors
 is_render = os.getenv("RENDER") == "true"
+dtype = torch.float16 if is_render else torch.float32  # Use float16 on Render to fit 512MB RAM limit
 
 print(f"Using device: {device} with dtype: {dtype} (On Render: {is_render})")
 
@@ -34,7 +34,7 @@ tokenizer = None
 try:
     if is_render:
         print("Loading lightweight model for Render Free Tier (ViT-GPT2)...")
-        model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning").to(device)
+        model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning", torch_dtype=dtype).to(device)
         feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
         tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
     else:
